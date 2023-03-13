@@ -1,5 +1,4 @@
 using Amazon.SQS.Model;
-using ImageBeautifier.Worker.Services;
 using ImageBeautifier.Worker.Services.Interfaces;
 
 namespace ImageBeautifier.Worker;
@@ -45,8 +44,8 @@ public class Worker : BackgroundService
         {
             try
             {
-                await _imageBeautifyService.ProcessMessage(message, cancellationToken);
-                // await _messageClient.DeleteMessageAsync(message, cancellationToken);
+                await _imageBeautifyService.ProcessMessageAsync(message, cancellationToken);
+                await _messageClient.DeleteMessageAsync(message, cancellationToken);
             }
             catch (Exception e)
             {

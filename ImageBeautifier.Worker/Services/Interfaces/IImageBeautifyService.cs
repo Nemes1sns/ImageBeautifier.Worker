@@ -4,5 +4,5 @@ namespace ImageBeautifier.Worker.Services.Interfaces;
 
 public interface IImageBeautifyService
 {
-    Task ProcessMessage(Message message, CancellationToken cancellationToken);
+    Task ProcessMessageAsync(Message message, CancellationToken cancellationToken);
 }

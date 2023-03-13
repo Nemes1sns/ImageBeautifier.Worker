@@ -1,3 +1,5 @@
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
 using Amazon.SQS;
 using ImageBeautifier.Worker;
@@ -16,9 +18,11 @@ IHost host = Host.CreateDefaultBuilder(args)
         
         var awsOptions = context.Configuration.GetAWSOptions();
         services.AddDefaultAWSOptions(awsOptions);
+        services.AddAWSService<IAmazonDynamoDB>();
         services.AddAWSService<IAmazonS3>();
         services.AddAWSService<IAmazonSQS>();
-        
+        services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
+
         services.AddHostedService<Worker>();
     })
     .Build();
