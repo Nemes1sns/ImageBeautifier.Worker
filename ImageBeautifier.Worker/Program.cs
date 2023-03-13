@@ -1,3 +1,4 @@
+using Amazon.S3;
 using Amazon.SQS;
 using ImageBeautifier.Worker;
 using ImageBeautifier.Worker.Infrastructure.Configuration;
@@ -9,10 +10,13 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         services.Configure<AWSEnvironmentOptions>(context.Configuration.GetSection("AWSEnvironment"));
         
+        services.AddSingleton<IImageBeautifyService, ImageBeautifyService>();
+        services.AddSingleton<IImageStorage, ImageStorage>();
         services.AddSingleton<IMessageClient, MessageClient>();
         
         var awsOptions = context.Configuration.GetAWSOptions();
         services.AddDefaultAWSOptions(awsOptions);
+        services.AddAWSService<IAmazonS3>();
         services.AddAWSService<IAmazonSQS>();
         
         services.AddHostedService<Worker>();
