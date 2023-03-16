@@ -1,18 +1,17 @@
-﻿FROM mcr.microsoft.com/dotnet/runtime:7.0 AS base
-WORKDIR /app
-
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 as build
+ 
 WORKDIR /src
-COPY ["ImageBeautifier.Worker/ImageBeautifier.Worker.csproj", "ImageBeautifier.Worker/"]
-RUN dotnet restore "ImageBeautifier.Worker/ImageBeautifier.Worker.csproj"
-COPY . .
-WORKDIR "/src/ImageBeautifier.Worker"
-RUN dotnet build "ImageBeautifier.Worker.csproj" -c Release -o /app/build
+COPY *.csproj ./
+RUN dotnet restore
+ 
+COPY . ./
+RUN dotnet build -o /app
+RUN dotnet publish -o /publish
+ 
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 as base
+COPY --from=build  /publish /app
 
-FROM build AS publish
-RUN dotnet publish "ImageBeautifier.Worker.csproj" -c Release -o /app/publish
+ENV ASPNETCORE_ENVIRONMENT=Development
 
-FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "ImageBeautifier.Worker.dll"]
